@@ -1,708 +1,1340 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TOKYO TRIP 2024</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: DotGothic16 (Pixel Style for Kanji) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Tokyo Trip Helper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <style>
-        /* 核心風格設定 */
-        :root {
-            --pixel-black: #1a1a1a;
-            --pixel-white: #ffffff;
-            --pixel-gray: #d4d4d4;
-        }
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet" />
 
-        body {
-            font-family: 'DotGothic16', sans-serif;
-            background-color: var(--pixel-gray);
-            color: var(--pixel-black);
-            overscroll-behavior-y: none; /* 防止手機下拉重整 */
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans TC"', 'Inter', 'system-ui', 'sans-serif']
+          }
         }
+      }
+    }
+  </script>
 
-        /* 像素風格元件 */
-        .pixel-box {
-            background-color: var(--pixel-white);
-            border: 4px solid var(--pixel-black);
-            box-shadow: 6px 6px 0px 0px var(--pixel-black);
-            margin-bottom: 1.5rem;
-        }
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"/>
 
-        .pixel-btn {
-            background-color: var(--pixel-white);
-            border: 3px solid var(--pixel-black);
-            box-shadow: 4px 4px 0px 0px var(--pixel-black);
-            font-weight: bold;
-            transition: all 0.1s;
-            cursor: pointer;
-        }
+  <style>
+    body{
+      font-family:"Noto Sans TC","Inter",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    .card{
+      border-radius:1rem;
+      box-shadow:0 10px 25px rgba(0,0,0,.12);
+    }
+    .tab-active{
+      border-bottom-width:2px;
+      border-color:#000;
+      color:#fff;
+    }
+    .mono-input{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    }
 
-        .pixel-btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px 0px var(--pixel-black);
-        }
-
-        .pixel-btn-black {
-            background-color: var(--pixel-black);
-            color: var(--pixel-white);
-            border: 3px solid var(--pixel-white);
-            outline: 3px solid var(--pixel-black);
-        }
-
-        .pixel-input {
-            border: 3px solid var(--pixel-black);
-            padding: 0.5rem;
-            width: 100%;
-            font-family: 'DotGothic16', sans-serif;
-            border-radius: 0;
-            background: #fff;
-        }
-
-        .pixel-input:focus {
-            outline: none;
-            background-color: #f0f0f0;
-        }
-
-        /* 底部導航 */
-        .nav-active {
-            background-color: var(--pixel-black);
-            color: var(--pixel-white);
-            transform: translate(0, -4px);
-        }
-
-        /* 隱藏/顯示頁面 */
-        .page-section {
-            display: none;
-            padding-bottom: 100px; /* 避開底部導航 */
-            animation: fadeIn 0.3s;
-        }
-
-        .page-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 時間軸線條 */
-        .timeline-line {
-            position: absolute;
-            left: 1rem;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background-color: var(--pixel-black);
-            z-index: 0;
-        }
-    </style>
+    /* 黑白像素電玩 Calculator */
+    .pixel-panel{
+      border:3px solid #000;
+      background:#fafafa;
+      box-shadow:4px 4px 0 #000;
+      padding:10px;
+    }
+    .pixel-title{
+      font-size:10px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .pixel-divider{
+      border-top:2px dashed #000;
+      margin:6px 0 8px;
+    }
+    .pixel-rate-tag{
+      border:2px solid #000;
+      padding:2px 8px;
+      font-size:9px;
+      font-weight:600;
+      background:#000;
+      color:#fff;
+      letter-spacing:.08em;
+    }
+    .pixel-rate-line{
+      font-size:9px;
+      letter-spacing:.08em;
+    }
+    .pixel-display{
+      background:#000;
+      border:3px solid #000;
+      padding:6px 8px;
+      margin-top:8px;
+      margin-bottom:10px;
+    }
+    .pixel-display-small{
+      font-size:10px;
+      color:#a1a1aa;
+    }
+    .pixel-display-main{
+      font-size:20px;
+      font-weight:700;
+      letter-spacing:.06em;
+      color:#22c55e;
+    }
+    .pixel-display-sub{
+      font-size:10px;
+      color:#a1a1aa;
+      margin-top:4px;
+    }
+    .pixel-keypad{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:6px;
+      margin-top:4px;
+    }
+    .pixel-btn{
+      border:2px solid #000;
+      background:#f5f5f5;
+      padding:8px 0;
+      font-size:11px;
+      text-align:center;
+      font-weight:500;
+      cursor:pointer;
+      user-select:none;
+    }
+    .pixel-btn-op{background:#e5e5e5;}
+    .pixel-btn-clear{background:#fee2e2;}
+    .pixel-btn:active,
+    .pixel-enter:active{
+      transform:translate(1px,1px);
+      box-shadow:inset 2px 2px 0 rgba(0,0,0,.18);
+    }
+    .pixel-enter{
+      border:2px solid #000;
+      background:#000;
+      color:#fff;
+      text-align:center;
+      padding:10px 0;
+      margin-top:8px;
+      font-size:11px;
+      font-weight:600;
+      letter-spacing:.15em;
+    }
+  </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden">
 
-    <!-- Header -->
-    <header class="bg-white border-b-4 border-black p-4 z-20 flex justify-between items-center shrink-0">
-        <h1 class="text-2xl font-bold tracking-widest"><i class="fas fa-gamepad mr-2"></i>TOKYO_TRIP</h1>
-        <button onclick="resetData()" class="text-xs border-2 border-black p-1 hover:bg-black hover:text-white">重置資料</button>
-    </header>
-
-    <!-- Main Content (Scrollable) -->
-    <main class="flex-1 overflow-y-auto p-4 relative" id="main-container">
-
-        <!-- 1. 資訊頁 (INFO) -->
-        <section id="page-info" class="page-section active">
-            <div class="pixel-box p-4">
-                <h2 class="text-xl font-bold border-b-4 border-black mb-4 pb-2">FLIGHT <i class="fas fa-plane"></i></h2>
-                <div class="mb-4">
-                    <p class="font-bold bg-black text-white inline-block px-2 mb-1">去程 12/13</p>
-                    <p>星宇航空 | TPE 15:00 ➔ NRT 19:00</p>
-                </div>
-                <div>
-                    <p class="font-bold bg-black text-white inline-block px-2 mb-1">回程 12/13</p>
-                    <p>星宇航空 | NRT 15:40 ➔ TPE 18:45</p>
-                    <p class="text-sm text-gray-500 mt-1">*回程日期依文字描述為準</p>
-                </div>
-            </div>
-
-            <div class="pixel-box p-4">
-                <h2 class="text-xl font-bold border-b-4 border-black mb-4 pb-2">HOTEL <i class="fas fa-bed"></i></h2>
-                <div class="mb-4">
-                    <p class="font-bold">Check-In 16:00 / Out 10:00</p>
-                </div>
-                <div class="mb-4 border-l-4 border-black pl-2">
-                    <p class="text-lg font-bold">東京市區</p>
-                    <p class="text-sm">東京都新宿区下落合１丁目８−13</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=東京都新宿区下落合１丁目８−13" target="_blank" class="pixel-btn text-xs px-2 py-1 inline-block mt-2">Google Maps</a>
-                </div>
-                <div class="border-l-4 border-black pl-2">
-                    <p class="text-lg font-bold">箱根</p>
-                    <p class="text-sm">神奈川県足柄下郡箱根町強羅1320-836</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=神奈川県足柄下郡箱根町強羅1320-836" target="_blank" class="pixel-btn text-xs px-2 py-1 inline-block mt-2">Google Maps</a>
-                </div>
-            </div>
-
-            <div class="pixel-box p-4">
-                <h2 class="text-xl font-bold border-b-4 border-black mb-4 pb-2">EMERGENCY <i class="fas fa-exclamation-triangle"></i></h2>
-                <div class="grid grid-cols-2 gap-2 text-center">
-                    <a href="tel:110" class="pixel-btn p-2 block">警察 110</a>
-                    <a href="tel:119" class="pixel-btn p-2 block">救護 119</a>
-                    <a href="https://www.jma.go.jp/jma/index.html" target="_blank" class="pixel-btn p-2 block col-span-2">日本氣象廳 <i class="fas fa-cloud-sun"></i></a>
-                </div>
-            </div>
-        </section>
-
-        <!-- 2. 行程表 (SCHEDULE) -->
-        <section id="page-schedule" class="page-section">
-            <div id="itinerary-container">
-                <!-- Javascript Rendered -->
-            </div>
-            <div class="text-center mt-6 mb-8">
-                <button onclick="addItineraryDay()" class="pixel-btn px-6 py-3 w-full">
-                    <i class="fas fa-plus"></i> 新增一天行程
-                </button>
-            </div>
-        </section>
-
-        <!-- 3. 購物清單 (SHOP) -->
-        <section id="page-shop" class="page-section">
-            <div class="pixel-box p-4 sticky top-0 z-10 border-b-4 border-black">
-                <h2 class="font-bold mb-2">新增購物項目</h2>
-                <div class="grid grid-cols-2 gap-2 mb-2">
-                    <input type="text" id="shop-name" placeholder="品名" class="pixel-input">
-                    <input type="text" id="shop-type" placeholder="種類 (藥妝/零食)" class="pixel-input">
-                </div>
-                <input type="text" id="shop-loc" placeholder="購買地點" class="pixel-input mb-2">
-                <div class="flex gap-2">
-                     <label class="pixel-btn flex-1 text-center py-2 flex items-center justify-center gap-2">
-                        <i class="fas fa-camera"></i> 拍照/圖
-                        <input type="file" id="shop-img" accept="image/*" class="hidden" onchange="previewImage(this, 'shop-preview')">
-                    </label>
-                    <button onclick="addShopItem()" class="pixel-btn-black flex-1 py-2">加入清單</button>
-                </div>
-                <div id="shop-preview" class="mt-2 hidden">
-                    <img src="" class="h-20 border-2 border-black object-cover">
-                </div>
-            </div>
-
-            <div id="shop-list" class="grid grid-cols-1 gap-4">
-                <!-- JS Rendered -->
-            </div>
-        </section>
-
-        <!-- 4. 記帳 (MONEY) -->
-        <section id="page-money" class="page-section">
-            <!-- 匯率與計算機 -->
-            <div class="pixel-box p-4">
-                <div class="flex justify-between items-center mb-2">
-                    <label class="font-bold">匯率 (JPY->TWD)</label>
-                    <input type="number" id="exchange-rate" step="0.001" class="pixel-input w-20 text-center" onchange="saveRate()" value="0.22">
-                </div>
-                <div class="bg-black p-4 mb-2">
-                    <input type="text" id="calc-input" placeholder="輸入算式 (如 500+200*2)" class="w-full bg-black text-white text-right font-mono text-xl focus:outline-none mb-2 placeholder-gray-600">
-                    <div class="text-right text-gray-400 text-sm" id="calc-result-twd">≈ NT$ 0</div>
-                </div>
-                <div class="grid grid-cols-4 gap-2 mb-4">
-                    <button onclick="calcAppend('+')" class="pixel-btn p-2">+</button>
-                    <button onclick="calcAppend('-')" class="pixel-btn p-2">-</button>
-                    <button onclick="calcAppend('*')" class="pixel-btn p-2">×</button>
-                    <button onclick="calculate()" class="pixel-btn-black p-2">=</button>
-                </div>
-                
-                <h3 class="font-bold border-t-2 border-black pt-2 mt-2 mb-2">新增支出</h3>
-                <div class="flex gap-2 mb-2">
-                    <input type="text" id="expense-name" placeholder="項目" class="pixel-input flex-1">
-                    <input type="number" id="expense-amt" placeholder="日幣" class="pixel-input w-24">
-                </div>
-                <div class="flex gap-2">
-                    <label class="pixel-btn p-2 flex-none"><i class="fas fa-camera"></i>
-                        <input type="file" id="expense-img" accept="image/*" class="hidden" onchange="previewImage(this, 'expense-preview')">
-                    </label>
-                    <button onclick="addExpense()" class="pixel-btn-black flex-1">記帳</button>
-                </div>
-                <div id="expense-preview" class="mt-2 hidden">
-                    <img src="" class="h-20 border-2 border-black object-cover">
-                </div>
-            </div>
-
-            <div class="pixel-box p-2 flex justify-between font-bold text-lg sticky top-0 z-10">
-                <span>總支出:</span>
-                <div>
-                    <span id="total-jpy">¥0</span> / <span id="total-twd" class="text-blue-800">NT$0</span>
-                </div>
-            </div>
-
-            <div id="expense-list" class="space-y-2">
-                <!-- JS Rendered -->
-            </div>
-        </section>
-
-        <!-- 5. 清單 (CHECK) -->
-        <section id="page-check" class="page-section">
-            
-            <div class="pixel-box p-4">
-                <h2 class="text-xl font-bold border-b-4 border-black mb-4">CHECK LIST <i class="fas fa-check-square"></i></h2>
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="check-input" class="pixel-input flex-1" placeholder="新增待辦事項...">
-                    <button onclick="addCheckItem()" class="pixel-btn-black px-4"><i class="fas fa-plus"></i></button>
-                </div>
-                <ul id="check-list" class="space-y-2">
-                    <!-- JS Rendered -->
-                </ul>
-            </div>
-
-            <div class="pixel-box p-4">
-                <h2 class="text-xl font-bold border-b-4 border-black mb-4">MEMO <i class="fas fa-sticky-note"></i></h2>
-                <p class="text-xs text-gray-500 mb-2">*輸入網址會自動轉換為連結</p>
-                <textarea id="memo-area" class="pixel-input w-full h-40" oninput="saveMemo()" placeholder="備忘錄..."></textarea>
-                <div id="memo-links" class="mt-4 flex flex-wrap gap-2">
-                    <!-- Parsed Links -->
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="h-16 bg-white border-t-4 border-black grid grid-cols-5 text-xs font-bold shrink-0 z-30">
-        <button onclick="switchTab('info')" class="nav-btn flex flex-col items-center justify-center nav-active" data-target="page-info">
-            <i class="fas fa-info-circle text-lg mb-1"></i>資訊
-        </button>
-        <button onclick="switchTab('schedule')" class="nav-btn flex flex-col items-center justify-center" data-target="page-schedule">
-            <i class="fas fa-calendar-alt text-lg mb-1"></i>行程
-        </button>
-        <button onclick="switchTab('shop')" class="nav-btn flex flex-col items-center justify-center" data-target="page-shop">
-            <i class="fas fa-shopping-cart text-lg mb-1"></i>購物
-        </button>
-        <button onclick="switchTab('money')" class="nav-btn flex flex-col items-center justify-center" data-target="page-money">
-            <i class="fas fa-calculator text-lg mb-1"></i>記帳
-        </button>
-        <button onclick="switchTab('check')" class="nav-btn flex flex-col items-center justify-center" data-target="page-check">
-            <i class="fas fa-list-ul text-lg mb-1"></i>清單
-        </button>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+<div class="max-w-md mx-auto min-h-screen flex flex-col bg-zinc-950">
+  <!-- Header -->
+  <header class="px-4 pt-4 pb-3 border-b border-zinc-800 bg-zinc-950 sticky top-0 z-20">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-semibold tracking-tight text-white">Tokyo Trip Helper</h1>
+        <p class="text-xs text-zinc-400 mt-1">2025/12/13 - 2025/12/20 ・ 東京 / 箱根</p>
+      </div>
+      <div class="text-right">
+        <p class="text-[10px] text-zinc-500 uppercase tracking-wide">旅程擁有者</p>
+        <p class="text-xs font-medium text-zinc-200">Chloé</p>
+      </div>
+    </div>
+    <nav class="mt-4 flex text-xs font-medium text-zinc-500 overflow-x-auto no-scrollbar">
+      <button data-tab="tab-itinerary" class="tab-btn flex-1 py-2 text-center border-b border-transparent">行程表</button>
+      <button data-tab="tab-shopping"  class="tab-btn flex-1 py-2 text-center border-b border-transparent">購物清單</button>
+      <button data-tab="tab-wallet"    class="tab-btn flex-1 py-2 text-center border-b border-transparent">WALLET</button>
+      <button data-tab="tab-checklist" class="tab-btn flex-1 py-2 text-center border-b border-transparent">清單</button>
+      <button data-tab="tab-info"      class="tab-btn flex-1 py-2 text-center border-b border-transparent">資訊</button>
     </nav>
+  </header>
 
-    <!-- Scripts -->
-    <script>
-        // --- DATA INITIALIZATION ---
-        const defaultItinerary = [
-            { date: '12/13 DAY1', content: ['台中高鐵→桃園機場', '星宇航空 15:00起飛', '19:00抵達成田機場', '前往東京市區住宿'] },
-            { date: '12/14 DAY2', content: ['上野動物園', '東京藝術大學', '上野公園聖誕市集', '東京市區住宿'] },
-            { date: '12/15 DAY3', content: ['東京新宿車站 11:00出發 (2號車 1C,1D)', '箱根湯本', '箱根湯本商店街', '元箱根港 (海盜船)', '桃源台→大湧谷→強羅公園', '箱根住宿(18:00晚餐)'] },
-            { date: '12/16 DAY4', content: ['箱根住宿→雕刻之森美術館', '箱根湯本 15:13出發 (7號車 10A,10B)', '東京新宿車站', '明治聖誕市集', '東京市區住宿'] },
-            { date: '12/17 DAY5', content: ['中野百老匯', '吉祥寺', '下北澤', '東京市區住宿'] },
-            { date: '12/18 DAY6', content: ['築地市場', '東京鐵塔', '六本木', '東京市區住宿'] },
-            { date: '12/19 DAY7', content: ['新宿→澀谷', '涉谷SKY', '東京市區住宿'] },
-            { date: '12/20 DAY8', content: ['東京市區住宿', '前往成田機場', '星宇航空 15:40起飛', '18:45抵達桃園機場', '回台中'] }
-        ];
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto px-4 pb-6 pt-3 space-y-4">
 
-        let appData = {
-            itinerary: JSON.parse(localStorage.getItem('trip_itinerary')) || defaultItinerary,
-            shop: JSON.parse(localStorage.getItem('trip_shop')) || [],
-            expenses: JSON.parse(localStorage.getItem('trip_expenses')) || [],
-            rate: parseFloat(localStorage.getItem('trip_rate')) || 0.22,
-            checklist: JSON.parse(localStorage.getItem('trip_checklist')) || [
-                {text: '護照', done: false}, {text: '日幣', done: false}, {text: '網卡/漫遊', done: false}
-            ],
-            memo: localStorage.getItem('trip_memo') || ''
-        };
+    <!-- 行程表 -->
+    <section id="tab-itinerary" class="tab-section space-y-4">
+      <!-- Flights -->
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-plane-departure text-xs"></i>航班資訊 Flight
+          </h2>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">STARLUX</span>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div class="flex gap-2">
+            <div class="w-14 shrink-0 text-[10px] uppercase tracking-wide text-zinc-500">去程</div>
+            <div>
+              <p class="font-medium">星宇航空 JX</p>
+              <p>12/13 15:00 TPE 起飛 → 19:00 抵達 NRT</p>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <div class="w-14 shrink-0 text-[10px] uppercase tracking-wide text-zinc-500">回程</div>
+            <div>
+              <p class="font-medium">星宇航空 JX</p>
+              <p>12/20 15:40 NRT 起飛 → 18:45 抵達 TPE</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        // --- NAVIGATION ---
-        function switchTab(tabName) {
-            // Update Buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('nav-active');
-                if(btn.getAttribute('onclick').includes(tabName)) btn.classList.add('nav-active');
-            });
-            // Update Sections
-            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(`page-${tabName}`).classList.add('active');
-            
-            // Scroll to top
-            document.getElementById('main-container').scrollTop = 0;
+      <!-- Hotels -->
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-hotel text-xs"></i>住宿資訊 Stay
+          </h2>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+            Check in 16:00 / Check out 10:00
+          </span>
+        </div>
+        <div class="space-y-3 text-xs">
+          <div>
+            <p class="font-medium text-white">東京市區住宿（12/13-15、12/16-20）</p>
+            <p>161-0033 東京都新宿区下落合１丁目８−13</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=161-0033+東京都新宿区下落合１丁目８−13"
+               target="_blank"
+               class="inline-flex items-center gap-1 mt-2 text-[11px] px-2 py-1 rounded-full border border-zinc-600 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>開啟 Google Maps
+            </a>
+          </div>
+          <div class="pt-2 border-t border-zinc-800">
+            <p class="font-medium text-white">箱根住宿（12/15-16）</p>
+            <p>〒250-0408 神奈川県足柄下郡箱根町強羅1320-836</p>
+            <a href="https://www.google.com/maps/search/?api=1&query=箱根町強羅1320-836"
+               target="_blank"
+               class="inline-flex items-center gap-1 mt-2 text-[11px] px-2 py-1 rounded-full border border-zinc-600 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>開啟 Google Maps
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Days -->
+      <div class="space-y-3">
+        <!-- DAY1 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY1">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 13 • DAY 1</p>
+              <h3 class="text-sm font-semibold">台中 → 東京市區</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">交通日</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 台中高鐵 → 桃園機場</li>
+            <li>・ 桃園機場 → 成田機場（星宇航空）</li>
+            <li>・ 成田機場 → 東京市區住宿 check-in</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=成田國際機場"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>成田機場地圖
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記（例如：記得買交通卡）</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text"
+                     class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                     placeholder="輸入小標記...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">
+                加入
+              </button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY2 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY2">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 14 • DAY 2</p>
+              <h3 class="text-sm font-semibold">上野・藝大・聖誕市集</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">漫步日</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 上野動物園</li>
+            <li>・ 東京藝術大學</li>
+            <li>・ 上野公園聖誕市集 → 回住宿</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=上野動物園"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>上野動物園
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=東京藝術大学"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>東京藝大
+            </a>
+            <a href="https://www.google.com/search?q=上野+聖誕市集+食記"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-utensils text-[10px]"></i>市集食記
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text"
+                     class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                     placeholder="帶暖暖包、提前到園區排隊...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY3 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY3">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 15 • DAY 3</p>
+              <h3 class="text-sm font-semibold">新宿 → 箱根・溫泉日</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white text-zinc-900 font-semibold">
+              <span class="mr-1 inline-block w-2 h-2 rounded-full bg-black"></span>重要 11:00
+            </span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li class="text-[11px] text-zinc-400 font-medium">
+              11:00 新宿出發 / 2號車廂 1C・1D
+            </li>
+            <li>・ 新宿 → 箱根湯本 → 箱根湯本商店街</li>
+            <li>・ 元箱根港 → 海盜船 → 桃源台 → 大湧谷 → 強羅公園</li>
+            <li class="text-[11px] text-zinc-300 font-medium">18:00 箱根住宿晚餐</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=新宿車站"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-train-subway text-[10px]"></i>新宿車站
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=箱根湯本商店街"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>箱根湯本商店街
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text"
+                     class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                     placeholder="行李寄放、暈車藥、換穿輕便鞋...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY4 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY4">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 16 • DAY 4</p>
+              <h3 class="text-sm font-semibold">箱根 → 雕刻之森 → 明治聖誕市集</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white text-zinc-900 font-semibold">
+              <span class="mr-1 inline-block w-2 h-2 rounded-full bg-black"></span>重要 15:13
+            </span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 箱根住宿 check-out</li>
+            <li>・ 雕刻之森美術館</li>
+            <li class="text-[11px] text-zinc-400 font-medium">15:13 箱根湯本 → 新宿 / 7號車廂 10A・10B</li>
+            <li>・ 新宿 → 明治聖誕市集 → 回住宿</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=彫刻の森美術館"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>雕刻之森
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text" class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500" placeholder="退房時間、紀念品購物時間...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY5 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY5">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 17 • DAY 5</p>
+              <h3 class="text-sm font-semibold">中野 → 吉祥寺 → 下北澤</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">小店巡禮</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 東京市區 → 中野百老匯</li>
+            <li>・ 吉祥寺 雜貨 & 咖啡</li>
+            <li>・ 下北澤 小店散步 → 回住宿</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=中野ブロードウェイ"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-location-dot text-[10px]"></i>中野百老匯
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=吉祥寺+雜貨"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-bag-shopping text-[10px]"></i>吉祥寺小店
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=下北沢"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-store text-[10px]"></i>下北澤
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text" class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500" placeholder="想逛的雜貨店、自選咖啡廳...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY6 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY6">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 18 • DAY 6</p>
+              <h3 class="text-sm font-semibold">築地 → 東京鐵塔 → 六本木</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">美食 & 夜景</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 築地市場早餐</li>
+            <li>・ 東京鐵塔</li>
+            <li>・ 六本木夜景 / 美術館 → 回住宿</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=築地市場"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-fish text-[10px]"></i>築地美食
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=東京タワー"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-tower-observation text-[10px]"></i>東京鐵塔
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text" class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500" placeholder="排隊名店、預約時間...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY7 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY7">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 19 • DAY 7</p>
+              <h3 class="text-sm font-semibold">新宿 → 澀谷 → SHIBUYA SKY</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">最後採買 & 夜景</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 新宿逛街</li>
+            <li>・ 澀谷十字路口 / 商場</li>
+            <li>・ SHIBUYA SKY 夜景 → 回住宿</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/maps/search/?api=1&query=新宿+購物"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-bag-shopping text-[10px]"></i>新宿購物
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=渋谷スクランブル交差点"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-people-group text-[10px]"></i>澀谷十字路口
+            </a>
+            <a href="https://www.google.com/maps/search/?api=1&query=SHIBUYA+SKY"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-building-circle-arrow-up text-[10px]"></i>SHIBUYA SKY
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text" class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500" placeholder="最後採買清單、想拍的景...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+
+        <!-- DAY8 -->
+        <article class="card bg-zinc-900/80 border border-zinc-800 p-4" data-day="DAY8">
+          <div class="flex items-center justify-between mb-2">
+            <div>
+              <p class="text-[11px] text-zinc-500 uppercase tracking-wide">12 / 20 • DAY 8</p>
+              <h3 class="text-sm font-semibold">回程・回家</h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-900">返家日</span>
+          </div>
+          <ul class="mt-2 space-y-1.5 text-xs">
+            <li>・ 東京市區住宿 check-out</li>
+            <li>・ 成田機場 → 桃園機場</li>
+            <li>・ 桃園 → 台中的家</li>
+          </ul>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.google.com/search?q=成田機場+退稅+教學"
+               target="_blank"
+               class="inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border border-zinc-700 hover:bg-zinc-800">
+              <i class="fa-solid fa-receipt text-[10px]"></i>退稅資訊
+            </a>
+          </div>
+          <div class="mt-3">
+            <label class="text-[11px] text-zinc-400">新增標記</label>
+            <div class="mt-1 flex gap-2">
+              <input type="text" class="day-note-input flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500" placeholder="確認行李重量、免稅店最後補貨...">
+              <button class="day-note-add text-[11px] px-3 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">加入</button>
+            </div>
+            <div class="day-note-tags mt-2 flex flex-wrap gap-1"></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 購物清單 -->
+    <section id="tab-shopping" class="tab-section hidden space-y-4">
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-bag-shopping text-xs"></i>購物清單 Shopping
+          </h2>
+          <span class="text-[10px] text-zinc-400">可新增 / 刪除，存在手機</span>
+        </div>
+        <form id="shopping-form" class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[11px] text-zinc-400">名稱</label>
+              <input id="shopping-name" required
+                     class="mt-1 w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                     placeholder="ex. 泡湯毛巾">
+            </div>
+            <div>
+              <label class="text-[11px] text-zinc-400">種類</label>
+              <input id="shopping-category"
+                     class="mt-1 w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                     placeholder="衣物 / 零食 / 紀念品...">
+            </div>
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-400">購買地點</label>
+            <input id="shopping-place"
+                   class="mt-1 w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                   placeholder="ex. 吉祥寺、下北澤、機場免稅店...">
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-400">照片上傳（縮圖儲存）</label>
+            <input type="file" accept="image/*" id="shopping-image"
+                   class="mt-1 block w-full text-[11px] text-zinc-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-medium file:bg-white file:text-zinc-900 hover:file:bg-zinc-200">
+            <p class="text-[10px] text-zinc-500 mt-1">會自動壓縮成縮圖再存入 LocalStorage。</p>
+            <div id="shopping-image-preview" class="mt-2 hidden">
+              <p class="text-[10px] text-zinc-500 mb-1">預覽縮圖</p>
+              <img id="shopping-image-preview-img" class="w-20 h-20 object-cover rounded-lg border border-zinc-700">
+            </div>
+          </div>
+          <input type="hidden" id="shopping-image-data">
+          <button type="submit" class="w-full mt-2 text-xs font-medium py-2 rounded-xl bg-white text-zinc-900 hover:bg-zinc-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus text-[11px]"></i>新增到購物清單
+          </button>
+        </form>
+      </div>
+
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-list-ul text-xs"></i>清單項目
+          </h3>
+          <button id="shopping-clear"
+                  class="text-[10px] px-2 py-1 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800">
+            清空全部
+          </button>
+        </div>
+        <div id="shopping-list" class="space-y-2 text-xs">
+          <p id="shopping-empty" class="text-[11px] text-zinc-500">尚未新增任何項目。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WALLET -->
+    <section id="tab-wallet" class="tab-section hidden space-y-4">
+      <!-- pixel calculator -->
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-wallet text-xs"></i>WALLET ・ 匯率＋計算機
+          </h2>
+          <span class="text-[10px] text-zinc-400">JPY → TWD</span>
+        </div>
+
+        <div class="pixel-panel text-zinc-900">
+          <div class="flex items-center justify-between">
+            <div class="pixel-title">CALCULATOR</div>
+            <span class="pixel-rate-tag">RATE</span>
+          </div>
+          <div class="pixel-divider"></div>
+
+          <div class="flex items-center justify-between mb-2">
+            <div class="pixel-rate-line flex items-center gap-1">
+              <span>1 ¥ =</span>
+              <input type="number" step="0.0001" id="wallet-rate"
+                     class="w-16 text-[10px] px-1 py-0.5 border border-black bg-white text-center text-zinc-900">
+              <span>NT</span>
+            </div>
+            <button id="wallet-rate-save"
+                    class="text-[9px] px-2 py-1 border-2 border-black bg-white hover:bg-zinc-200">
+              SAVE
+            </button>
+          </div>
+
+          <div class="pixel-display">
+            <div class="flex justify-between items-center pixel-display-small mb-1">
+              <span id="wallet-display-expression">0</span>
+              <span id="wallet-display-small-jpy">0</span>
+            </div>
+            <div class="pixel-display-main flex items-baseline gap-1">
+              <span>¥</span>
+              <span id="wallet-display-jpy">0</span>
+            </div>
+            <div class="pixel-display-sub">
+              ≈ NT$ <span id="wallet-display-twd">0</span>
+            </div>
+          </div>
+
+          <input type="hidden" id="wallet-expression">
+
+          <div id="wallet-keypad" class="pixel-keypad">
+            <button type="button" class="pixel-btn" data-key="7">7</button>
+            <button type="button" class="pixel-btn" data-key="8">8</button>
+            <button type="button" class="pixel-btn" data-key="9">9</button>
+            <button type="button" class="pixel-btn pixel-btn-op" data-key="/">/</button>
+
+            <button type="button" class="pixel-btn" data-key="4">4</button>
+            <button type="button" class="pixel-btn" data-key="5">5</button>
+            <button type="button" class="pixel-btn" data-key="6">6</button>
+            <button type="button" class="pixel-btn pixel-btn-op" data-key="*">*</button>
+
+            <button type="button" class="pixel-btn" data-key="1">1</button>
+            <button type="button" class="pixel-btn" data-key="2">2</button>
+            <button type="button" class="pixel-btn" data-key="3">3</button>
+            <button type="button" class="pixel-btn pixel-btn-op" data-key="-">-</button>
+
+            <button type="button" class="pixel-btn" data-key="0">0</button>
+            <button type="button" class="pixel-btn" data-key=".">.</button>
+            <button type="button" class="pixel-btn pixel-btn-clear" data-key="C">C</button>
+            <button type="button" class="pixel-btn pixel-btn-op" data-key="+">+</button>
+          </div>
+
+          <button type="button" id="wallet-calc-btn" class="pixel-enter">
+            ENTER
+          </button>
+
+          <div id="wallet-calc-result" class="mt-2 text-[10px] text-zinc-700">
+            日圓合計：— ・ 台幣：約 —
+          </div>
+        </div>
+      </div>
+
+      <!-- expense form -->
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-pen-to-square text-xs"></i>記帳紀錄 Expense
+          </h2>
+          <span class="text-[10px] text-zinc-400">支出＋照片</span>
+        </div>
+        <form id="wallet-form" class="space-y-3">
+          <div>
+            <label class="text-[11px] text-zinc-400">品項名稱</label>
+            <input id="wallet-item" required
+                   class="mt-1 w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                   placeholder="ex. 上野便當 / 箱根纜車票">
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-400">金額（日圓）</label>
+            <input id="wallet-jpy" type="number" min="0" required
+                   class="mt-1 w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700">
+          </div>
+          <div>
+            <label class="text-[11px] text-zinc-400">照片上傳（收據 / 餐點）</label>
+            <input type="file" accept="image/*" id="wallet-image"
+                   class="mt-1 block w-full text-[11px] text-zinc-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-medium file:bg-white file:text-zinc-900 hover:file:bg-zinc-200">
+            <p class="text-[10px] text-zinc-500 mt-1">會自動壓縮成縮圖後儲存。</p>
+            <div id="wallet-image-preview" class="mt-2 hidden">
+              <p class="text-[10px] text-zinc-500 mb-1">預覽縮圖</p>
+              <img id="wallet-image-preview-img"
+                   class="w-20 h-20 object-cover rounded-lg border border-zinc-700">
+            </div>
+          </div>
+          <input type="hidden" id="wallet-image-data">
+          <button type="submit"
+                  class="w-full mt-2 text-xs font-medium py-2 rounded-xl bg-white text-zinc-900 hover:bg-zinc-200 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus text-[11px]"></i>新增一筆記帳
+          </button>
+        </form>
+      </div>
+
+      <!-- expense list -->
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-xs"></i>記帳歷史
+          </h3>
+          <button id="wallet-clear"
+                  class="text-[10px] px-2 py-1 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800">
+            清空全部
+          </button>
+        </div>
+        <div id="wallet-list" class="space-y-2 text-xs">
+          <p id="wallet-empty" class="text-[11px] text-zinc-500">尚未新增任何記帳紀錄。</p>
+        </div>
+        <div id="wallet-summary" class="mt-3 text-[11px] text-zinc-300 border-t border-zinc-800 pt-2">
+          總金額：日圓 — ・ 台幣約 —
+        </div>
+      </div>
+    </section>
+
+    <!-- 清單 -->
+    <section id="tab-checklist" class="tab-section hidden space-y-4">
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-clipboard-check text-xs"></i>行前準備 CheckList
+          </h2>
+          <button id="packing-reset"
+                  class="text-[10px] px-2 py-1 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800">
+            清空 & 重置
+          </button>
+        </div>
+        <div id="packing-list" class="space-y-1.5 text-xs mb-3"></div>
+        <form id="packing-form" class="flex gap-2">
+          <input id="packing-input"
+                 class="flex-1 text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                 placeholder="新增項目 ex. 充電線、藥品、護照...">
+          <button type="submit"
+                  class="text-[11px] px-3 py-1.5 rounded-lg bg-white text-zinc-900 hover:bg-zinc-200">
+            新增
+          </button>
+        </form>
+      </div>
+
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-note-sticky text-xs"></i>個人備忘錄
+          </h2>
+          <span class="text-[10px] text-zinc-400">網址會變成可點擊連結</span>
+        </div>
+        <div class="space-y-2 text-xs">
+          <textarea id="memo-input" rows="4"
+                    class="w-full text-xs px-2 py-1.5 rounded-lg bg-zinc-950 border border-zinc-700 placeholder:text-zinc-500"
+                    placeholder="可以記下旅伴LINE、訂位編號、想去的隱藏小店網址..."></textarea>
+          <div class="flex justify-end gap-2">
+            <button id="memo-clear"
+                    class="text-[11px] px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+              清除
+            </button>
+            <button id="memo-save"
+                    class="text-[11px] px-3 py-1.5 rounded-lg bg白 text-zinc-900 hover:bg-zinc-200 bg-white">
+              儲存
+            </button>
+          </div>
+          <div class="mt-2 border-t border-zinc-800 pt-2">
+            <p class="text-[10px] text-zinc-500 mb-1">備忘錄預覽（可點擊連結）</p>
+            <div id="memo-preview" class="text-xs whitespace-pre-line">尚未儲存備忘錄。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 資訊 -->
+    <section id="tab-info" class="tab-section hidden space-y-4">
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <h2 class="text-sm font-semibold flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-cloud-sun text-xs"></i>天氣與預報
+        </h2>
+        <p class="text-[11px] text-zinc-300 mb-2">出門前先看天氣，決定要不要帶傘和保暖配件。</p>
+        <div class="space-y-2 text-xs">
+          <a href="https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=130000"
+             target="_blank"
+             class="block px-3 py-2 rounded-lg border border-zinc-700 hover:bg-zinc-800 flex items-center justify-between">
+            <span>東京・日本氣象廳預報</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <a href="https://www.jma.go.jp/bosai/forecast/#area_type=offices&area_code=140000"
+             target="_blank"
+             class="block px-3 py-2 rounded-lg border border-zinc-700 hover:bg-zinc-800 flex items-center justify-between">
+            <span>神奈川（箱根）天氣預報</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <h2 class="text-sm font-semibold flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-triangle-exclamation text-xs"></i>緊急聯絡資訊
+        </h2>
+        <p class="text-[11px] text-zinc-300 mb-2">希望都用不到，但有備無患。</p>
+        <ul class="text-xs space-y-1.5">
+          <li class="flex justify-between"><span>日本警察（報案 / 緊急）</span><span class="font-mono">110</span></li>
+          <li class="flex justify-between"><span>救護車・消防</span><span class="font-mono">119</span></li>
+        </ul>
+        <div class="mt-3 text-xs space-y-2">
+          <a href="https://www.roc-taiwan.org/jp_ja/index.html"
+             target="_blank"
+             class="block px-3 py-2 rounded-lg border border-zinc-700 hover:bg-zinc-800 flex items-center justify-between">
+            <span>駐日代表處官網（聯絡資訊）</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+          <a href="tel:110"
+             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-zinc-900 text-[11px] mt-1">
+            <i class="fa-solid fa-phone-volume text-[10px]"></i>一鍵撥打 110
+          </a>
+        </div>
+      </div>
+
+      <div class="card bg-zinc-900/80 border border-zinc-800 p-4">
+        <h2 class="text-sm font-semibold flex items-center gap-2 mb-2">
+          <i class="fa-solid fa-circle-info text-xs"></i>旅遊注意事項 & 禁忌
+        </h2>
+        <ul class="text-xs space-y-1.5">
+          <li>・ 禁止攜帶毒品、違禁藥品、攻擊性武器等出入境。</li>
+          <li>・ 部分肉類、水果、植物等生鮮食品不得帶入境，回國前可再查最新規定。</li>
+          <li>・ 大眾交通工具上壓低音量，盡量避免講電話。</li>
+          <li>・ 神社寺廟拍照前注意是否禁止攝影。</li>
+          <li>・ 垃圾請丟至指定地點，日本路上垃圾桶不多，可自備小垃圾袋。</li>
+          <li>・ 遺失護照時，儘快聯繫就近警察局與駐日代表處。</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- hidden canvas for compression -->
+<canvas id="hidden-canvas" class="hidden"></canvas>
+
+<script>
+(function(){
+  const STORAGE_KEYS={
+    itineraryNotes:"travelApp_itineraryNotes",
+    shopping:"travelApp_shopping",
+    wallet:"travelApp_walletRecords",
+    rate:"travelApp_rate",
+    packing:"travelApp_packingList",
+    memo:"travelApp_memo"
+  };
+
+  /* tabs */
+  function initTabs(){
+    const tabButtons=document.querySelectorAll(".tab-btn");
+    const sections=document.querySelectorAll(".tab-section");
+    function activate(id){
+      sections.forEach(sec=>sec.classList.toggle("hidden",sec.id!==id));
+      tabButtons.forEach(btn=>{
+        if(btn.dataset.tab===id){
+          btn.classList.add("tab-active","text-zinc-100");
+          btn.classList.remove("text-zinc-500");
+        }else{
+          btn.classList.remove("tab-active","text-zinc-100");
+          btn.classList.add("text-zinc-500");
         }
+      });
+    }
+    tabButtons.forEach((btn,i)=>{
+      btn.addEventListener("click",()=>activate(btn.dataset.tab));
+      if(i===0)activate(btn.dataset.tab);
+    });
+  }
 
-        // --- COMMON UTILS ---
-        function saveToLS() {
-            localStorage.setItem('trip_itinerary', JSON.stringify(appData.itinerary));
-            localStorage.setItem('trip_shop', JSON.stringify(appData.shop));
-            localStorage.setItem('trip_expenses', JSON.stringify(appData.expenses));
-            localStorage.setItem('trip_checklist', JSON.stringify(appData.checklist));
-            localStorage.setItem('trip_rate', appData.rate);
-            localStorage.setItem('trip_memo', appData.memo);
-        }
+  /* localStorage helpers */
+  function loadJSON(key,fallback){
+    try{
+      const raw=localStorage.getItem(key);
+      if(!raw)return fallback;
+      return JSON.parse(raw);
+    }catch(e){
+      console.warn("parse fail",key,e);
+      return fallback;
+    }
+  }
+  function saveJSON(key,val){
+    try{localStorage.setItem(key,JSON.stringify(val));}
+    catch(e){console.warn("save fail",key,e);}
+  }
 
-        function resetData() {
-            if(confirm('確定要重置所有資料嗎？這將會刪除所有新增的紀錄。')) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
+  /* image compress */
+  function compressImage(file,maxSize,cb){
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const img=new Image();
+      img.onload=()=>{
+        const canvas=document.getElementById("hidden-canvas");
+        const ctx=canvas.getContext("2d");
+        let w=img.width,h=img.height;
+        if(w>h&&w>maxSize){h=Math.round(h*maxSize/w);w=maxSize;}
+        else if(h>=w&&h>maxSize){w=Math.round(w*maxSize/h);h=maxSize;}
+        canvas.width=w;canvas.height=h;
+        ctx.clearRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        const data=canvas.toDataURL("image/jpeg",0.7);
+        cb(data);
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
 
-        // Image Compression (Max 600px width, 0.6 quality) to save Space
-        function previewImage(input, previewId) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    let width = img.width;
-                    let height = img.height;
-                    const MAX_WIDTH = 600;
-
-                    if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
-                        width = MAX_WIDTH;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-                    const previewDiv = document.getElementById(previewId);
-                    previewDiv.classList.remove('hidden');
-                    previewDiv.querySelector('img').src = dataUrl;
-                    input.dataset.base64 = dataUrl; // Store in dataset
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-
-        // --- ITINERARY LOGIC ---
-        function renderItinerary() {
-            const container = document.getElementById('itinerary-container');
-            container.innerHTML = '';
-
-            appData.itinerary.forEach((day, dayIndex) => {
-                let itemsHtml = '';
-                day.content.forEach((item, itemIndex) => {
-                    // Check for links keywords
-                    let extras = '';
-                    if(item.includes('餐廳') || item.includes('住宿') || item.includes('機場') || item.includes('車站') || item.includes('園') || item.includes('宮') || item.includes('寺')) {
-                         extras += `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item)}" target="_blank" class="ml-2 text-xs border border-black px-1 hover:bg-black hover:text-white"><i class="fas fa-map-marker-alt"></i> MAP</a>`;
-                    }
-
-                    // Highlight Time/Numbers
-                    let displayItem = item.replace(/(\d{1,2}:\d{2})/g, '<span class="bg-black text-white px-1">$1</span>');
-
-                    itemsHtml += `
-                        <div class="flex items-start mb-4 relative group">
-                            <div class="w-4 h-4 bg-black absolute -left-[1.3rem] top-1 border-2 border-white"></div>
-                            <div class="flex-1 bg-white border-2 border-black p-2 shadow-[2px_2px_0_0_rgba(0,0,0,1)]">
-                                <p class="text-base">${displayItem} ${extras}</p>
-                                <div class="mt-2 flex gap-2 justify-end opacity-50 group-hover:opacity-100 transition-opacity">
-                                    <button onclick="moveItineraryItem(${dayIndex}, ${itemIndex}, -1)" class="text-xs border border-black px-1">▲</button>
-                                    <button onclick="moveItineraryItem(${dayIndex}, ${itemIndex}, 1)" class="text-xs border border-black px-1">▼</button>
-                                    <button onclick="deleteItineraryItem(${dayIndex}, ${itemIndex})" class="text-xs border border-black px-1 text-red-600">×</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                const dayHtml = `
-                    <div class="relative pl-6 pb-4">
-                        <div class="timeline-line"></div>
-                        <div class="mb-4">
-                            <span class="text-xl font-bold bg-black text-white px-2 py-1 border-2 border-black inline-block relative z-10 shadow-[4px_4px_0_0_#ccc]">
-                                ${day.date}
-                            </span>
-                            <button onclick="addItineraryItem(${dayIndex})" class="ml-2 text-xs border-2 border-black px-2 py-1 bg-white hover:bg-black hover:text-white">+ 新增</button>
-                            <button onclick="deleteItineraryDay(${dayIndex})" class="ml-1 text-xs border-2 border-black px-2 py-1 bg-red-100 text-red-600">刪除整天</button>
-                        </div>
-                        ${itemsHtml}
-                    </div>
-                `;
-                container.innerHTML += dayHtml;
-            });
-        }
-
-        function addItineraryDay() {
-            const date = prompt("請輸入日期與標題 (例如: 12/21 DAY9)");
-            if(date) {
-                appData.itinerary.push({date: date, content: []});
-                saveToLS();
-                renderItinerary();
-            }
-        }
-
-        function deleteItineraryDay(index) {
-            if(confirm("確定刪除這整天的行程嗎？")) {
-                appData.itinerary.splice(index, 1);
-                saveToLS();
-                renderItinerary();
-            }
-        }
-
-        function addItineraryItem(dayIndex) {
-            const text = prompt("輸入行程內容：");
-            if(text) {
-                appData.itinerary[dayIndex].content.push(text);
-                saveToLS();
-                renderItinerary();
-            }
-        }
-
-        function deleteItineraryItem(dayIndex, itemIndex) {
-            if(confirm("刪除此項目？")) {
-                appData.itinerary[dayIndex].content.splice(itemIndex, 1);
-                saveToLS();
-                renderItinerary();
-            }
-        }
-
-        function moveItineraryItem(dayIdx, itemIdx, direction) {
-            const arr = appData.itinerary[dayIdx].content;
-            const newIdx = itemIdx + direction;
-            if (newIdx >= 0 && newIdx < arr.length) {
-                [arr[itemIdx], arr[newIdx]] = [arr[newIdx], arr[itemIdx]];
-                saveToLS();
-                renderItinerary();
-            }
-        }
-
-        // --- SHOPPING LOGIC ---
-        function renderShop() {
-            const list = document.getElementById('shop-list');
-            list.innerHTML = '';
-            appData.shop.forEach((item, index) => {
-                const imgHtml = item.img ? `<img src="${item.img}" class="w-20 h-20 object-cover border-2 border-black mr-3 bg-gray-200">` : '';
-                list.innerHTML += `
-                    <div class="pixel-box p-3 flex items-start">
-                        ${imgHtml}
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <h3 class="font-bold text-lg">${item.name}</h3>
-                                <button onclick="deleteShop(${index})" class="text-red-500 font-bold px-2">×</button>
-                            </div>
-                            <p class="text-sm text-gray-600"><span class="bg-black text-white text-xs px-1 mr-1">${item.type}</span> @ ${item.loc}</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function addShopItem() {
-            const name = document.getElementById('shop-name').value;
-            const type = document.getElementById('shop-type').value;
-            const loc = document.getElementById('shop-loc').value;
-            const imgInput = document.getElementById('shop-img');
-            const img = imgInput.dataset.base64 || '';
-
-            if(!name) return alert('請輸入名稱');
-
-            appData.shop.push({ name, type: type || '未分類', loc: loc || '不限', img });
-            saveToLS();
-            renderShop();
-            
-            // Clear inputs
-            document.getElementById('shop-name').value = '';
-            document.getElementById('shop-type').value = '';
-            document.getElementById('shop-loc').value = '';
-            imgInput.value = ''; 
-            imgInput.dataset.base64 = '';
-            document.getElementById('shop-preview').classList.add('hidden');
-        }
-
-        function deleteShop(index) {
-            if(confirm('刪除購買項目？')) {
-                appData.shop.splice(index, 1);
-                saveToLS();
-                renderShop();
-            }
-        }
-
-        // --- EXPENSE LOGIC ---
-        function saveRate() {
-            appData.rate = parseFloat(document.getElementById('exchange-rate').value);
-            saveToLS();
-            renderExpenses();
-            calculate(); // Re-calc calc result
-        }
-
-        function calcAppend(val) {
-            const input = document.getElementById('calc-input');
-            input.value += val;
-        }
-
-        function calculate() {
-            const input = document.getElementById('calc-input');
-            const resDisplay = document.getElementById('calc-result-twd');
-            try {
-                // Safe basic evaluation regex
-                if(/^[0-9+\-*/().\s]*$/.test(input.value)) {
-                    const result = eval(input.value); // OK for local app, strictly filtered
-                    if(result !== undefined) {
-                        input.value = result;
-                        const twd = Math.round(result * appData.rate);
-                        resDisplay.innerText = `≈ NT$ ${twd}`;
-                    }
-                }
-            } catch (e) {
-                input.value = 'Error';
-            }
-        }
-        
-        // Auto calculate on input
-        document.getElementById('calc-input').addEventListener('input', function() {
-            const resDisplay = document.getElementById('calc-result-twd');
-             try {
-                if(/^[0-9+\-*/().\s]*$/.test(this.value)) {
-                    const result = eval(this.value);
-                    if(!isNaN(result)) {
-                         const twd = Math.round(result * appData.rate);
-                         resDisplay.innerText = `≈ NT$ ${twd}`;
-                    }
-                }
-            } catch (e) {}
+  /* itinerary notes */
+  function initItineraryNotes(){
+    const stored=loadJSON(STORAGE_KEYS.itineraryNotes,{});
+    document.querySelectorAll("[data-day]").forEach(card=>{
+      const dayId=card.getAttribute("data-day");
+      const input=card.querySelector(".day-note-input");
+      const addBtn=card.querySelector(".day-note-add");
+      const tagsCont=card.querySelector(".day-note-tags");
+      function render(){
+        tagsCont.innerHTML="";
+        const notes=stored[dayId]||[];
+        notes.forEach((txt,idx)=>{
+          const span=document.createElement("span");
+          span.className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-100 text-[10px] text-zinc-900";
+          span.textContent=txt;
+          const del=document.createElement("button");
+          del.type="button";
+          del.className="ml-1 text-[10px] text-zinc-500 hover:text-zinc-900";
+          del.innerHTML='<i class="fa-solid fa-xmark"></i>';
+          del.addEventListener("click",()=>{
+            const arr=stored[dayId]||[];
+            arr.splice(idx,1);
+            stored[dayId]=arr;
+            saveJSON(STORAGE_KEYS.itineraryNotes,stored);
+            render();
+          });
+          span.appendChild(del);
+          tagsCont.appendChild(span);
         });
+      }
+      addBtn.addEventListener("click",()=>{
+        const v=(input.value||"").trim();
+        if(!v)return;
+        if(!stored[dayId])stored[dayId]=[];
+        stored[dayId].push(v);
+        saveJSON(STORAGE_KEYS.itineraryNotes,stored);
+        input.value="";
+        render();
+      });
+      render();
+    });
+  }
 
-        function renderExpenses() {
-            const list = document.getElementById('expense-list');
-            list.innerHTML = '';
-            let totalJPY = 0;
-            let totalTWD = 0;
-
-            // Sort by new -> old
-            const sorted = [...appData.expenses].reverse(); 
-
-            sorted.forEach((item, index) => {
-                const realIndex = appData.expenses.length - 1 - index; // match original array index
-                const twd = Math.round(item.amt * appData.rate);
-                totalJPY += parseInt(item.amt);
-                totalTWD += twd;
-
-                const imgHtml = item.img ? `<img src="${item.img}" class="w-12 h-12 object-cover border-2 border-black mr-2">` : '';
-                
-                list.innerHTML += `
-                    <div class="bg-white border-2 border-black p-2 flex items-center shadow-[2px_2px_0_0_#000]">
-                        ${imgHtml}
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <span class="font-bold">${item.name}</span>
-                                <button onclick="deleteExpense(${realIndex})" class="text-red-500 font-bold px-2">×</button>
-                            </div>
-                            <div class="flex justify-between text-sm mt-1">
-                                <span class="text-gray-600">¥${item.amt}</span>
-                                <span class="text-blue-800 font-bold">NT$${twd}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            document.getElementById('total-jpy').innerText = `¥${totalJPY}`;
-            document.getElementById('total-twd').innerText = `NT$${totalTWD}`;
-            document.getElementById('exchange-rate').value = appData.rate;
+  /* shopping */
+  function initShopping(){
+    const listEl=document.getElementById("shopping-list");
+    const emptyEl=document.getElementById("shopping-empty");
+    const form=document.getElementById("shopping-form");
+    const clearBtn=document.getElementById("shopping-clear");
+    const imgInput=document.getElementById("shopping-image");
+    const imgDataInput=document.getElementById("shopping-image-data");
+    const imgPrev=document.getElementById("shopping-image-preview");
+    const imgPrevImg=document.getElementById("shopping-image-preview-img");
+    let items=loadJSON(STORAGE_KEYS.shopping,[]);
+    function render(){
+      listEl.innerHTML="";
+      if(!items.length){
+        emptyEl.style.display="block";
+        listEl.appendChild(emptyEl);
+        return;
+      }
+      emptyEl.style.display="none";
+      items.forEach((item,idx)=>{
+        const row=document.createElement("div");
+        row.className="flex items-center gap-3 p-2 rounded-lg border border-zinc-800 bg-zinc-900/40";
+        if(item.image){
+          const img=document.createElement("img");
+          img.src=item.image;img.alt=item.name;
+          img.className="w-10 h-10 rounded-lg object-cover border border-zinc-700";
+          row.appendChild(img);
+        }else{
+          const ph=document.createElement("div");
+          ph.className="w-10 h-10 rounded-lg border border-dashed border-zinc-700 flex items-center justify-center text-[10px] text-zinc-500";
+          ph.textContent="無圖";
+          row.appendChild(ph);
         }
+        const info=document.createElement("div");
+        info.className="flex-1 text-xs";
+        info.innerHTML='<div class="font-medium">'+(item.name||"")+
+          '</div><div class="text-[11px] text-zinc-400">'+(item.category||"—")+" ｜ "+(item.place||"購買地點未填寫")+"</div>";
+        row.appendChild(info);
+        const del=document.createElement("button");
+        del.className="text-[11px] px-2 py-1 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800";
+        del.innerHTML='<i class="fa-solid fa-trash-can"></i>';
+        del.addEventListener("click",()=>{
+          items.splice(idx,1);
+          saveJSON(STORAGE_KEYS.shopping,items);
+          render();
+        });
+        row.appendChild(del);
+        listEl.appendChild(row);
+      });
+    }
+    imgInput.addEventListener("change",function(){
+      const f=this.files[0];
+      if(!f){imgDataInput.value="";imgPrev.classList.add("hidden");return;}
+      compressImage(f,600,data=>{
+        imgDataInput.value=data;
+        imgPrevImg.src=data;
+        imgPrev.classList.remove("hidden");
+      });
+    });
+    form.addEventListener("submit",e=>{
+      e.preventDefault();
+      const name=document.getElementById("shopping-name").value.trim();
+      const cat=document.getElementById("shopping-category").value.trim();
+      const place=document.getElementById("shopping-place").value.trim();
+      const img=imgDataInput.value||"";
+      if(!name)return;
+      items.push({name,category:cat,place,image:img});
+      saveJSON(STORAGE_KEYS.shopping,items);
+      form.reset();
+      imgDataInput.value="";
+      imgPrev.classList.add("hidden");
+      render();
+    });
+    clearBtn.addEventListener("click",()=>{
+      if(!items.length)return;
+      if(!confirm("確定要清空購物清單嗎？"))return;
+      items=[];
+      saveJSON(STORAGE_KEYS.shopping,items);
+      render();
+    });
+    render();
+  }
 
-        function addExpense() {
-            const name = document.getElementById('expense-name').value;
-            const amt = document.getElementById('expense-amt').value;
-            const imgInput = document.getElementById('expense-img');
-            const img = imgInput.dataset.base64 || '';
+  /* safe eval */
+  function safeEvalExpression(expr){
+    const cleaned=expr.replace(/[^0-9+\-*/().]/g,"");
+    if(!cleaned)return NaN;
+    try{
+      const fn=new Function('"use strict";return('+cleaned+");");
+      const r=fn();
+      return typeof r==="number"&&isFinite(r)?r:NaN;
+    }catch(e){return NaN;}
+  }
 
-            if(!name || !amt) return alert('請輸入項目與金額');
+  /* wallet with pixel calculator */
+  function initWallet(){
+    const rateInput=document.getElementById("wallet-rate");
+    const rateSaveBtn=document.getElementById("wallet-rate-save");
 
-            appData.expenses.push({ name, amt, img, date: new Date().toISOString() });
-            saveToLS();
-            renderExpenses();
+    const exprInput=document.getElementById("wallet-expression");
+    const calcBtn=document.getElementById("wallet-calc-btn");
+    const calcResult=document.getElementById("wallet-calc-result");
 
-            // Clear
-            document.getElementById('expense-name').value = '';
-            document.getElementById('expense-amt').value = '';
-            imgInput.value = ''; 
-            imgInput.dataset.base64 = '';
-            document.getElementById('expense-preview').classList.add('hidden');
-        }
+    const displayExpr=document.getElementById("wallet-display-expression");
+    const displaySmallJpy=document.getElementById("wallet-display-small-jpy");
+    const displayJpy=document.getElementById("wallet-display-jpy");
+    const displayTwd=document.getElementById("wallet-display-twd");
+    const keypad=document.getElementById("wallet-keypad");
 
-        function deleteExpense(index) {
-            if(confirm('刪除此筆記帳？')) {
-                appData.expenses.splice(index, 1);
-                saveToLS();
-                renderExpenses();
-            }
-        }
+    const form=document.getElementById("wallet-form");
+    const listEl=document.getElementById("wallet-list");
+    const emptyEl=document.getElementById("wallet-empty");
+    const clearBtn=document.getElementById("wallet-clear");
+    const summaryEl=document.getElementById("wallet-summary");
+    const imgInput=document.getElementById("wallet-image");
+    const imgDataInput=document.getElementById("wallet-image-data");
+    const imgPrev=document.getElementById("wallet-image-preview");
+    const imgPrevImg=document.getElementById("wallet-image-preview-img");
 
-        // --- CHECKLIST & MEMO ---
-        function renderChecklist() {
-            const list = document.getElementById('check-list');
-            list.innerHTML = '';
-            appData.checklist.forEach((item, index) => {
-                list.innerHTML += `
-                    <li class="flex items-center bg-white border-2 border-black p-2 shadow-[2px_2px_0_0_#000]">
-                        <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleCheck(${index})" class="w-5 h-5 accent-black mr-3">
-                        <span class="flex-1 ${item.done ? 'line-through text-gray-400' : ''}">${item.text}</span>
-                        <button onclick="deleteCheck(${index})" class="text-red-500 font-bold ml-2">×</button>
-                    </li>
-                `;
-            });
-        }
+    let rate=loadJSON(STORAGE_KEYS.rate,0.22);
+    let records=loadJSON(STORAGE_KEYS.wallet,[]);
 
-        function addCheckItem() {
-            const input = document.getElementById('check-input');
-            if(input.value) {
-                appData.checklist.push({text: input.value, done: false});
-                input.value = '';
-                saveToLS();
-                renderChecklist();
-            }
-        }
+    rateInput.value=rate;
+    exprInput.value="";
 
-        function toggleCheck(index) {
-            appData.checklist[index].done = !appData.checklist[index].done;
-            saveToLS();
-            renderChecklist();
-        }
+    function jpyToTwd(j){return Math.round(j*rate);}
 
-        function deleteCheck(index) {
-            appData.checklist.splice(index, 1);
-            saveToLS();
-            renderChecklist();
-        }
+    function updateDisplay(expr,jpyVal,twdVal){
+      displayExpr.textContent=expr||"0";
+      displaySmallJpy.textContent=jpyVal?jpyVal.toLocaleString("ja-JP"):"0";
+      displayJpy.textContent=jpyVal?jpyVal.toLocaleString("ja-JP"):"0";
+      displayTwd.textContent=twdVal?twdVal.toLocaleString("zh-TW"):"0";
+    }
+    updateDisplay("",0,0);
 
-        function saveMemo() {
-            const val = document.getElementById('memo-area').value;
-            appData.memo = val;
-            saveToLS();
-            renderMemoLinks(val);
-        }
+    function renderWalletList(){
+      listEl.innerHTML="";
+      if(!records.length){
+        emptyEl.style.display="block";
+        listEl.appendChild(emptyEl);
+      }else{
+        emptyEl.style.display="none";
+        let totalJpy=0;
+        records.forEach((rec,idx)=>{
+          const jpy=Number(rec.jpy)||0;
+          totalJpy+=jpy;
 
-        function renderMemoLinks(text) {
-            const container = document.getElementById('memo-links');
-            container.innerHTML = '';
-            const urlRegex = /(https?:\/\/[^\s]+)/g;
-            const matches = text.match(urlRegex);
-            if(matches) {
-                matches.forEach(url => {
-                    container.innerHTML += `<a href="${url}" target="_blank" class="pixel-btn text-xs px-2 py-1 truncate max-w-full"><i class="fas fa-link"></i> 連結</a>`;
-                });
-            }
-        }
+          const row=document.createElement("div");
+          row.className="flex items-center gap-3 p-2 rounded-lg border border-zinc-800 bg-zinc-900/40";
 
-        // --- INITIAL RENDER ---
-        window.onload = function() {
-            renderItinerary();
-            renderShop();
-            renderExpenses();
-            renderChecklist();
-            
-            document.getElementById('memo-area').value = appData.memo;
-            renderMemoLinks(appData.memo);
-        };
+          if(rec.image){
+            const img=document.createElement("img");
+            img.src=rec.image;img.alt=rec.item;
+            img.className="w-10 h-10 rounded-lg object-cover border border-zinc-700 flex-shrink-0";
+            row.appendChild(img);
+          }else{
+            const ph=document.createElement("div");
+            ph.className="w-10 h-10 rounded-lg border border-dashed border-zinc-700 flex items-center justify-center text-[10px] text-zinc-500 flex-shrink-0";
+            ph.textContent="無圖";
+            row.appendChild(ph);
+          }
 
-    </script>
+          const info=document.createElement("div");
+          info.className="flex-1 text-xs";
+          const twd=jpyToTwd(jpy);
+          info.innerHTML='<div class="font-medium">'+(rec.item||"")+
+            '</div><div class="text-[11px] text-zinc-400">¥ '+jpy.toLocaleString("ja-JP")+
+            " ｜ 約 NT$ "+twd.toLocaleString("zh-TW")+"</div>";
+          row.appendChild(info);
+
+          const del=document.createElement("button");
+          del.className="text-[11px] px-2 py-1 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800";
+          del.innerHTML='<i class="fa-solid fa-trash-can"></i>';
+          del.addEventListener("click",()=>{
+            records.splice(idx,1);
+            saveJSON(STORAGE_KEYS.wallet,records);
+            renderWalletList();
+          });
+          row.appendChild(del);
+
+          listEl.appendChild(row);
+        });
+        const totalTwd=jpyToTwd(totalJpy);
+        summaryEl.textContent="總金額：日圓 "+totalJpy.toLocaleString("ja-JP")+" ・ 台幣約 NT$ "+totalTwd.toLocaleString("zh-TW");
+      }
+    }
+
+    rateSaveBtn.addEventListener("click",()=>{
+      const v=parseFloat(rateInput.value);
+      if(isNaN(v)||v<=0){alert("請輸入正確的匯率數值。");return;}
+      rate=v;
+      saveJSON(STORAGE_KEYS.rate,rate);
+      renderWalletList();
+    });
+
+    keypad.addEventListener("click",e=>{
+      const btn=e.target.closest("button[data-key]");
+      if(!btn)return;
+      const key=btn.dataset.key;
+      if(key==="C"){
+        exprInput.value="";
+        updateDisplay("",0,0);
+        calcResult.textContent="日圓合計：— ・ 台幣：約 —";
+        return;
+      }
+      exprInput.value=(exprInput.value||"")+key;
+      displayExpr.textContent=exprInput.value;
+    });
+
+    calcBtn.addEventListener("click",()=>{
+      const expr=(exprInput.value||"").trim();
+      if(!expr){
+        calcResult.textContent="請先輸入計算式。";
+        updateDisplay("",0,0);
+        return;
+      }
+      const val=safeEvalExpression(expr);
+      if(isNaN(val)){
+        calcResult.textContent="計算式格式錯誤，請確認後重新輸入。";
+        updateDisplay(expr,0,0);
+        return;
+      }
+      const twd=jpyToTwd(val);
+      calcResult.textContent="日圓合計：¥ "+val.toLocaleString("ja-JP")+" ・ 台幣：約 NT$ "+twd.toLocaleString("zh-TW");
+      updateDisplay(expr,val,twd);
+    });
+
+    imgInput.addEventListener("change",function(){
+      const f=this.files[0];
+      if(!f){imgDataInput.value="";imgPrev.classList.add("hidden");return;}
+      compressImage(f,600,data=>{
+        imgDataInput.value=data;
+        imgPrevImg.src=data;
+        imgPrev.classList.remove("hidden");
+      });
+    });
+
+    form.addEventListener("submit",e=>{
+      e.preventDefault();
+      const item=document.getElementById("wallet-item").value.trim();
+      const jpyVal=parseFloat(document.getElementById("wallet-jpy").value);
+      const image=imgDataInput.value||"";
+      if(!item||isNaN(jpyVal))return;
+      records.push({item,jpy:jpyVal,image});
+      saveJSON(STORAGE_KEYS.wallet,records);
+      form.reset();
+      imgDataInput.value="";
+      imgPrev.classList.add("hidden");
+      renderWalletList();
+    });
+
+    clearBtn.addEventListener("click",()=>{
+      if(!records.length)return;
+      if(!confirm("確定要清空全部記帳紀錄嗎？"))return;
+      records=[];
+      saveJSON(STORAGE_KEYS.wallet,records);
+      renderWalletList();
+    });
+
+    renderWalletList();
+  }
+
+  /* packing checklist */
+  const DEFAULT_PACKING=[
+    {text:"護照 / 身分證 / 駕照",done:false},
+    {text:"現金日圓 / 信用卡 / IC 卡",done:false},
+    {text:"手機、行動電源、充電線",done:false},
+    {text:"常備藥品（暈車藥、感冒藥等）",done:false},
+    {text:"保暖衣物（圍巾、帽子、手套）",done:false},
+    {text:"盥洗用品 / 隱形眼鏡用品",done:false}
+  ];
+  function initPacking(){
+    const listEl=document.getElementById("packing-list");
+    const form=document.getElementById("packing-form");
+    const input=document.getElementById("packing-input");
+    const resetBtn=document.getElementById("packing-reset");
+    let items=loadJSON(STORAGE_KEYS.packing,DEFAULT_PACKING);
+    function render(){
+      listEl.innerHTML="";
+      if(!items.length){
+        listEl.innerHTML='<p class="text-[11px] text-zinc-500">目前沒有任何行前準備項目。</p>';
+        return;
+      }
+      items.forEach((item,idx)=>{
+        const row=document.createElement("label");
+        row.className="flex items-center gap-2 p-1 rounded-lg hover:bg-zinc-900/70 cursor-pointer";
+        const cb=document.createElement("input");
+        cb.type="checkbox";
+        cb.checked=!!item.done;
+        cb.className="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-950 text-black focus:ring-0";
+        cb.addEventListener("change",()=>{
+          items[idx].done=cb.checked;
+          saveJSON(STORAGE_KEYS.packing,items);
+          render();
+        });
+        const span=document.createElement("span");
+        span.className="flex-1 text-xs "+(item.done?"line-through text-zinc-500":"text-zinc-100");
+        span.textContent=item.text;
+        const del=document.createElement("button");
+        del.type="button";
+        del.className="text-[10px] px-2 py-0.5 rounded-full border border-zinc-700 text-zinc-400 hover:bg-zinc-800";
+        del.innerHTML='<i class="fa-solid fa-xmark"></i>';
+        del.addEventListener("click",e=>{
+          e.preventDefault();e.stopPropagation();
+          items.splice(idx,1);
+          saveJSON(STORAGE_KEYS.packing,items);
+          render();
+        });
+        row.appendChild(cb);row.appendChild(span);row.appendChild(del);
+        listEl.appendChild(row);
+      });
+    }
+    form.addEventListener("submit",e=>{
+      e.preventDefault();
+      const v=(input.value||"").trim();
+      if(!v)return;
+      items.push({text:v,done:false});
+      saveJSON(STORAGE_KEYS.packing,items);
+      input.value="";
+      render();
+    });
+    resetBtn.addEventListener("click",()=>{
+      if(!confirm("清空並重置為預設行前清單？"))return;
+      items=DEFAULT_PACKING.slice();
+      saveJSON(STORAGE_KEYS.packing,items);
+      render();
+    });
+    render();
+  }
+
+  /* memo */
+  function linkify(text){
+    const urlRegex=/(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex,url=>{
+      const clean=url.replace(/[\u3000-\u303F\uFF00-\uFFEF]+$/g,"");
+      return '<a href="'+clean+
+        '" target="_blank" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-600 text-[11px] mt-0.5 mr-1 hover:bg-zinc-800"><i class="fa-solid fa-link text-[9px]"></i>'+clean+"</a>";
+    });
+  }
+  function initMemo(){
+    const input=document.getElementById("memo-input");
+    const saveBtn=document.getElementById("memo-save");
+    const clearBtn=document.getElementById("memo-clear");
+    const preview=document.getElementById("memo-preview");
+    let memo=loadJSON(STORAGE_KEYS.memo,"");
+    function render(){
+      input.value=memo;
+      if(!memo)preview.textContent="尚未儲存備忘錄。";
+      else preview.innerHTML=linkify(memo).replace(/\n/g,"<br>");
+    }
+    saveBtn.addEventListener("click",()=>{
+      memo=input.value||"";
+      saveJSON(STORAGE_KEYS.memo,memo);
+      render();
+    });
+    clearBtn.addEventListener("click",()=>{
+      if(!memo&&!input.value)return;
+      if(!confirm("確定要清除備忘錄嗎？"))return;
+      memo="";
+      saveJSON(STORAGE_KEYS.memo,memo);
+      render();
+    });
+    render();
+  }
+
+  document.addEventListener("DOMContentLoaded",function(){
+    initTabs();
+    initItineraryNotes();
+    initShopping();
+    initWallet();
+    initPacking();
+    initMemo();
+  });
+})();
+</script>
 </body>
 </html>
